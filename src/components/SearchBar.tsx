@@ -14,7 +14,7 @@ const SearchBar: FC<SearchBar> = ({ pokemonName, setPokemonName }) => {
     setPokemonName(e.target.value);
   };
   return (
-    <div className="w-full h-24 flex items-center justify-center">
+    <div className="w-full h-24 flex items-center justify-center sticky top-0 z-10">
       <div className="w-full mt-6 border-transparent  flex items-center relative">
         <input
           value={pokemonName}

@@ -27,7 +27,7 @@ function App() {
     <div className="lg:mx-36 text-gray-800">
       <div className="relative ">
         <div className="flex justify-between ">
-          <div className="w-full lg:w-4/5">
+          <div className="w-full lg:w-4/5 relative">
             <SearchBar
               pokemonName={pokemonName}
               setPokemonName={setPokemonName}
@@ -48,7 +48,7 @@ function App() {
           </div>
         </div>
         {currentPokemon > 0 && (
-          <div className=" lg:hidden w-full h-full top-0 absolute">
+          <div className=" lg:hidden w-full h-full top-0 absolute z-50">
             <Display
               id={currentPokemon}
               setCurrentPokemon={setCurrentPokemon}
