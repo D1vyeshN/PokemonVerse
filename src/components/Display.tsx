@@ -111,7 +111,7 @@ const Display: FC<Display> = ({ id, setCurrentPokemon }) => {
       </div>
 
       <img
-        className="w-28 h-28 sm:w-40 sm:h-40 lg:w-52 lg:h-52 -mb-1 lg:-mt-40 text-center  p-1 contrast-125 brightness-95 "
+        className="w-36 h-36 sm:w-44 sm:h-44 lg:w-52 lg:h-52 -mb-1 lg:-mt-40 text-center  p-1 contrast-125 brightness-95 "
         alt={`Display-${id}`}
         src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
       />

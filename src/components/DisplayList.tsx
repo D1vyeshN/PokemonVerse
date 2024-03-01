@@ -101,14 +101,18 @@ const DisplayList: FC<DisplayLists> = ({
   const newPokemonData = data?.pokemon_v2_pokemon || [];
 
   useEffect(() => {
-    setPokemonData((prevData: any) => [...prevData, ...newPokemonData]);
+    if (newPokemonData.length != 0) {
+      setPokemonData((prevData: any) => [...prevData, ...newPokemonData]);
+    }
   }, [newPokemonData]);
 
+  const basic = BasicData(offset);
+
   const filteredPokemon = pokemonName
-    ? pokemonData.filter((pokemon:any) =>
+    ? pokemonData.filter((pokemon: any) =>
         pokemon.name.toLowerCase().includes(pokemonName.toLowerCase())
       )
-    : pokemonData;
+    : basic;
 
   if (loading)
     return (
@@ -124,7 +128,7 @@ const DisplayList: FC<DisplayLists> = ({
 
   return (
     <div className="my-4">
-      <div className="w-full flex flex-wrap bg-transparent justify-evenly">
+      <div className="w-full px-1 flex flex-wrap bg-transparent justify-evenly">
         {filteredPokemon?.map((pokemon: any, i: number) => (
           <div
             key={i}
@@ -163,5 +167,48 @@ const DisplayList: FC<DisplayLists> = ({
     </div>
   );
 };
+
+function BasicData(offset: any) {
+  const GET_POKEMONLIST_BASIC = gql`
+  query samplePokeAPIquery($pokemonName: String = "") {
+    pokemon_v2_pokemon(
+      where: { name: { _iregex: $pokemonName } }
+      limit:18, offset: ${offset}
+    ) {
+      id
+      name
+      pokemon_v2_pokemontypes {
+        pokemon_v2_type {
+          name
+        }
+      }
+    }
+  }
+`;
+  const [pokemonData, setPokemonData] = useState<any>([]);
+
+  const { loading, error, data } = useQuery<any>(GET_POKEMONLIST_BASIC);
+
+  const newPokemonData = data?.pokemon_v2_pokemon || [];
+
+  useEffect(() => {
+    if (newPokemonData.length != 0) {
+      setPokemonData((prevData: any) => [...prevData, ...newPokemonData]);
+    }
+  }, [newPokemonData]);
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-[100vh] ">
+        <img
+          src="./pokeball-icon.png"
+          className="w-52 animate-spin-slow"
+          alt="Loading..."
+        />
+      </div>
+    );
+  if (error) return <p>Error : {error.message}</p>;
+
+  return pokemonData;
+}
 
 export default DisplayList;

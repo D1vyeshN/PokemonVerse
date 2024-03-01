@@ -14,7 +14,7 @@ function App() {
       window.innerHeight + document.documentElement.scrollTop+10 >
       document.documentElement.scrollHeight
     ) {
-      setOffset((prev) => prev + 18);
+      setOffset((prev) => prev + 30);
     }
   };
 
