@@ -128,7 +128,7 @@ const DisplayList: FC<DisplayLists> = ({
 
   return (
     <div className="my-4">
-      <div className="w-full px-1 flex flex-wrap bg-transparent justify-evenly">
+      <div className="w-full px-0.5 flex flex-wrap bg-transparent justify-evenly">
         {filteredPokemon?.map((pokemon: any, i: number) => (
           <div
             key={i}
