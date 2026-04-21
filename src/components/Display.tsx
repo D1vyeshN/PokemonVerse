@@ -139,9 +139,9 @@ const Display: FC<Display> = ({ id, setCurrentPokemon }) => {
                 (el: any, i: number) => (
                   <div
                     key={i}
-                    className={`inline-block my-auto px-2 py-0.5 h-fit text-center capitalize ${ColorSelector(
+                    className={`inline-block my-auto px-2 py-0.5 h-fit text-center capitalize bg-[${ColorSelector(
                       el?.pokemon_v2_type?.name,
-                    )} rounded-lg font-medium mx-2 text-sm opacity-85`}
+                    )}] rounded-lg font-medium mx-2 text-sm opacity-85`}
                   >
                     <p>{el?.pokemon_v2_type?.name}</p>
                   </div>

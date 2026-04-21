@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Display from "./components/Display";
 import DisplayList from "./components/DisplayList";
 import SearchBar from "./components/SearchBar";
@@ -6,10 +6,21 @@ import SearchBar from "./components/SearchBar";
 function App() {
   const [pokemonName, setPokemonName] = useState("");
   const [currentPokemon, setCurrentPokemon] = useState(0);
+  const [currentBg, setCurrentBg] = useState({
+    color_1: "",
+    color_2: "",
+  });
+  console.log(currentBg);
 
   return (
-    <div className="lg:mx-5 xl:mx-20 text-gray-800">
-      <div className="relative">
+    <div className={`relative`}>
+      <div
+        className="min-h-screen h-screen w-full fixed top-0 left-0 z-0"
+        style={{
+          backgroundImage: `linear-gradient(to right, ${currentBg.color_1+80}, ${currentBg.color_2 == "#000" ? currentBg.color_1+80 : currentBg.color_2+80})`,
+        }}
+      ></div>
+      <div className="lg:px-5 xl:px-20 text-gray-800  relative bg-transparent z-20">
         <div className="flex justify-between gap-5">
           <div className="w-full lg:w-2/3 relative">
             <SearchBar
@@ -19,6 +30,7 @@ function App() {
             <DisplayList
               // offset={offset}
               pokemonName={pokemonName}
+              setCurrentBg={setCurrentBg}
               setCurrentPokemon={setCurrentPokemon}
             />
           </div>

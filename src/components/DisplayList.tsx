@@ -27,54 +27,59 @@ import { useDebounce } from "../hooks/debounce";
 export function ColorSelector(params: any) {
   switch (params) {
     case "normal":
-      return "bg-[#BCBCAC]";
+      return "#BCBCAC";
     case "fighting":
-      return "bg-[#BC5442]";
+      return "#BC5442";
     case "flying":
-      return "bg-[#669AFF]";
+      return "#669AFF";
     case "poison":
-      return "bg-[#AB549A]";
+      return "#AB549A";
     case "ground":
-      return "bg-[#DEBC54]";
+      return "#DEBC54";
     case "rock":
-      return "bg-[#BCAC66]";
+      return "#BCAC66";
     case "bug":
-      return "bg-[#ABBC1C]";
+      return "#ABBC1C";
     case "ghost":
-      return "bg-[#6666BC]";
+      return "#6666BC";
     case "steel":
-      return "bg-[#ABACBC]";
+      return "#ABACBC";
     case "fire":
-      return "bg-[#FF421C]";
+      return "#FF421C";
     case "water":
-      return "bg-[#2F9AFF]";
+      return "#2F9AFF";
     case "grass":
-      return "bg-[#78CD54]";
+      return "#78CD54";
     case "electric":
-      return "bg-[#FFCD30]";
+      return "#FFCD30";
     case "psychic":
-      return "bg-[#FF549A]";
+      return "#FF549A";
     case "ice":
-      return "bg-[#78DEFF]";
+      return "#78DEFF";
     case "dragon":
-      return "bg-[#7866EF]";
+      return "#7866EF";
     case "dark":
-      return "bg-[#785442]";
+      return "#785442";
     case "fairy":
-      return "bg-[#FFACFF]";
+      return "#FFACFF";
     case "shadow":
-      return "bg-[#0E2E4C]";
+      return "#0E2E4C";
     default:
-      return "bg-[#000]";
+      return "#000";
   }
 }
 
 interface DisplayLists {
   pokemonName: string;
   setCurrentPokemon: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentBg: React.Dispatch<any>;
 }
 
-const DisplayList: FC<DisplayLists> = ({ pokemonName, setCurrentPokemon }) => {
+const DisplayList: FC<DisplayLists> = ({
+  pokemonName,
+  setCurrentPokemon,
+  setCurrentBg,
+}) => {
   const [offset, setOffset] = useState(0);
   const [pokemonData, setPokemonData] = useState<any>([]);
   const [searchData, setSearchData] = useState<any>([]);
@@ -158,7 +163,7 @@ const DisplayList: FC<DisplayLists> = ({ pokemonName, setCurrentPokemon }) => {
         );
       });
     } else {
-      setPokemonData((prevData: any) =>  {
+      setPokemonData((prevData: any) => {
         return [...new Set([...prevData, ...newPokemonData])];
       });
     }
@@ -188,7 +193,14 @@ const DisplayList: FC<DisplayLists> = ({ pokemonName, setCurrentPokemon }) => {
         {filteredPokemon?.map((pokemon: any, i: number) => (
           <div
             key={i}
-            onClick={() => setCurrentPokemon(pokemon.id)}
+            onClick={() => {
+              const { pokemon_v2_pokemontypes } = pokemon;
+              setCurrentBg({
+                color_1: ColorSelector(pokemon_v2_pokemontypes[0]?.pokemon_v2_type?.name),
+                color_2: ColorSelector(pokemon_v2_pokemontypes[1]?.pokemon_v2_type?.name),
+              });
+              setCurrentPokemon(pokemon.id);
+            }}
             // onClick={()=>setIsOpen(true)}
             className=" w-36 md:w-44 lg:w-40 m-0.5 lg:m-1.5 mt-10 lg:mt-3  flex items-center justify-end flex-col"
           >
@@ -208,9 +220,9 @@ const DisplayList: FC<DisplayLists> = ({ pokemonName, setCurrentPokemon }) => {
                 {pokemon.pokemon_v2_pokemontypes.map((el: any, i: number) => (
                   <p
                     key={i}
-                    className={`px-3 py-1 text-sm rounded-lg ${ColorSelector(
+                    className={`px-3 py-1 text-sm rounded-lg bg-[${ColorSelector(
                       el?.pokemon_v2_type?.name,
-                    )} text-center font-semibold capitalize opacity-85`}
+                    )}] text-center font-semibold capitalize opacity-85`}
                   >
                     {el?.pokemon_v2_type?.name}
                   </p>
