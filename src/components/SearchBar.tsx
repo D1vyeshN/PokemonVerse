@@ -20,7 +20,7 @@ const SearchBar: FC<SearchBar> = ({ pokemonName, setPokemonName }) => {
           value={pokemonName}
           type="text"
           placeholder="Search Your Pokemon"
-          className="w-full mx-10 rounded-xl text-lg placeholder:text-gray-500 placeholder:text-lg p-6 pe-12 shadow-lg outline-none"
+          className="w-full mx-10 rounded-xl text-lg placeholder:text-gray-500 placeholder:text-lg p-4 pe-6 shadow-lg outline-none"
           onChange={(e) => handleSearch(e)}
         />
         {pokemonName.length > 0 ? (
@@ -31,7 +31,7 @@ const SearchBar: FC<SearchBar> = ({ pokemonName, setPokemonName }) => {
             <IoClose className="w-8 h-8 " />
           </span>
         ) : (
-          <span className=" bg-red-500 hover:opacity-80 shadow-lg shadow-red-400 p-2 rounded-xl absolute right-16 ">
+          <span className=" bg-red-500 hover:opacity-80 shadow-lg shadow-red-400 p-2 rounded-xl absolute right-14 ">
             <IoSearch className="w-6 h-6 text-white" />
           </span>
         )}

@@ -1,5 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
+import { useDebounce } from "../hooks/debounce";
 
 // const typeColors = {
 //     'normal': '#BCBCAC',
@@ -69,22 +70,38 @@ export function ColorSelector(params: any) {
 }
 
 interface DisplayLists {
-  offset: number;
   pokemonName: string;
   setCurrentPokemon: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const DisplayList: FC<DisplayLists> = ({
-  offset,
-  pokemonName,
-  setCurrentPokemon,
-}) => {
+const DisplayList: FC<DisplayLists> = ({ pokemonName, setCurrentPokemon }) => {
+  const [offset, setOffset] = useState(0);
   const [pokemonData, setPokemonData] = useState<any>([]);
+  const [searchData, setSearchData] = useState<any>([]);
+  const [lastMessage, setLastMessage] = useState<Boolean>(false);
+  const [mainLoader, setMainLoader] = useState<Boolean>(true);
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    if (lastMessage) return;
+    if (isFetchingRef.current) return;
+    const reachedBottom =
+      window.innerHeight + document.documentElement.scrollTop + 200 >=
+      document.documentElement.scrollHeight;
+
+    if (reachedBottom) {
+      isFetchingRef.current = true;
+
+      setOffset((prev) => prev + 30);
+    }
+  };
+
   const GET_POKEMONLIST = gql`
-    query samplePokeAPIquery($pokemonName: String = "${pokemonName}") {
+    query samplePokeAPIquery($pokemonName: String, $offset: Int) {
       pokemon_v2_pokemon(
         where: { name: { _iregex: $pokemonName } }
-        limit:18, offset: ${offset}
+        limit: 18
+        offset: $offset
       ) {
         id
         name
@@ -96,25 +113,65 @@ const DisplayList: FC<DisplayLists> = ({
       }
     }
   `;
-  const { loading, error, data } = useQuery<any>(GET_POKEMONLIST);
+
+  const debouncedSearch = useDebounce(pokemonName, 500);
+  const { data, loading, error } = useQuery(GET_POKEMONLIST, {
+    fetchPolicy: "cache-and-network",
+    variables: {
+      pokemonName: debouncedSearch?.trim() || ".*", // fallback regex
+      offset: offset,
+    },
+  });
 
   const newPokemonData = data?.pokemon_v2_pokemon || [];
+  const filteredPokemon =
+    pokemonName.trim().length > 0
+      ? searchData.filter((pokemon: any) =>
+          pokemon.name.toLowerCase().includes(pokemonName.toLowerCase()),
+        )
+      : pokemonData;
 
   useEffect(() => {
-    if (newPokemonData.length != 0) {
-      setPokemonData((prevData: any) => [...prevData, ...newPokemonData]);
+    setOffset(0);
+    setLastMessage(false);
+  }, [pokemonName]);
+
+  useEffect(() => {
+    if (!loading) {
+      isFetchingRef.current = false;
+      setMainLoader(false);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    console.log(searchData, newPokemonData, lastMessage, loading, offset);
+    if (loading) return;
+
+    if (!newPokemonData || newPokemonData.length == 0) {
+      setLastMessage(true);
+      return;
+    }
+    if (newPokemonData.length != 0 && pokemonName.trim().length > 0) {
+      setSearchData((prevData: any) => {
+        return [...prevData, ...newPokemonData].filter(
+          (el, i, self) => self.findIndex((u) => u.id === el.id) === i,
+        );
+      });
+    } else {
+      setPokemonData((prevData: any) =>  {
+        return [...new Set([...prevData, ...newPokemonData])];
+      });
     }
   }, [newPokemonData]);
 
-  const basic = BasicData(offset);
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastMessage]);
 
-  const filteredPokemon = pokemonName
-    ? pokemonData.filter((pokemon: any) =>
-        pokemon.name.toLowerCase().includes(pokemonName.toLowerCase())
-      )
-    : basic;
+  // const basic = BasicData(0);
 
-  if (loading)
+  if (mainLoader)
     return (
       <div className="flex items-center justify-center h-[100vh] ">
         <img
@@ -124,7 +181,6 @@ const DisplayList: FC<DisplayLists> = ({
         />
       </div>
     );
-  if (error) return <p>Error : {error.message}</p>;
 
   return (
     <div className="my-4">
@@ -134,17 +190,17 @@ const DisplayList: FC<DisplayLists> = ({
             key={i}
             onClick={() => setCurrentPokemon(pokemon.id)}
             // onClick={()=>setIsOpen(true)}
-            className=" w-48 lg:w-52 m-0.5 lg:m-1.5 mt-10 lg:mt-3  flex items-center justify-end flex-col"
+            className=" w-36 md:w-44 lg:w-40 m-0.5 lg:m-1.5 mt-10 lg:mt-3  flex items-center justify-end flex-col"
           >
             <div className="w-full mt-14 group  border-2 border-transparent bg-white shadow-lg hover:border-gray-400 rounded-2xl flex items-center justify-center flex-col">
               <img
-                className="w-24 h-24 -mt-14 group-hover:scale-125 p-2 brightness-95 contrast-150"
-                alt="location-reference"
+                className="w-28 h-28 -mt-14 group-hover:scale-125 p-2 brightness-95 contrast-150"
+                alt={pokemon.name.slice(0, 15)}
                 // src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
               />
               <p className="text-xs">N°{pokemon.id}</p>
-              <h1 className="text-lg capitalize font-bold m-2">
+              <h1 className="text-base md:text-lg capitalize font-bold m-2">
                 {pokemon.name.slice(0, 19)}
               </h1>
 
@@ -153,7 +209,7 @@ const DisplayList: FC<DisplayLists> = ({
                   <p
                     key={i}
                     className={`px-3 py-1 text-sm rounded-lg ${ColorSelector(
-                      el?.pokemon_v2_type?.name
+                      el?.pokemon_v2_type?.name,
                     )} text-center font-semibold capitalize opacity-85`}
                   >
                     {el?.pokemon_v2_type?.name}
@@ -164,51 +220,21 @@ const DisplayList: FC<DisplayLists> = ({
           </div>
         ))}
       </div>
+      {!isFetchingRef.current && !loading && lastMessage && (
+        <p className="w-full text-center pt-4">End of Results</p>
+      )}
+      {loading && (
+        <div className="flex items-center justify-center h-fit py-6">
+          <img
+            src="./pokeball-icon.png"
+            className="w-24 animate-spin-slow contrast-75"
+            alt="Loading..."
+          />
+        </div>
+      )}
+      {error && <p className="w-full text-center">Error : {error?.message}</p>}
     </div>
   );
 };
-
-function BasicData(offset: any) {
-  const GET_POKEMONLIST_BASIC = gql`
-  query samplePokeAPIquery($pokemonName: String = "") {
-    pokemon_v2_pokemon(
-      where: { name: { _iregex: $pokemonName } }
-      limit:18, offset: ${offset}
-    ) {
-      id
-      name
-      pokemon_v2_pokemontypes {
-        pokemon_v2_type {
-          name
-        }
-      }
-    }
-  }
-`;
-  const [pokemonData, setPokemonData] = useState<any>([]);
-
-  const { loading, error, data } = useQuery<any>(GET_POKEMONLIST_BASIC);
-
-  const newPokemonData = data?.pokemon_v2_pokemon || [];
-
-  useEffect(() => {
-    if (newPokemonData.length != 0) {
-      setPokemonData((prevData: any) => [...prevData, ...newPokemonData]);
-    }
-  }, [newPokemonData]);
-  if (loading)
-    return (
-      <div className="flex items-center justify-center h-[100vh] ">
-        <img
-          src="./pokeball-icon.png"
-          className="w-52 animate-spin-slow"
-          alt="Loading..."
-        />
-      </div>
-    );
-  if (error) return <p>Error : {error.message}</p>;
-
-  return pokemonData;
-}
 
 export default DisplayList;

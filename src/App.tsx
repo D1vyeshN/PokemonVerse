@@ -6,40 +6,24 @@ import SearchBar from "./components/SearchBar";
 function App() {
   const [pokemonName, setPokemonName] = useState("");
   const [currentPokemon, setCurrentPokemon] = useState(0);
-  const [offset, setOffset] = useState(0);
-
-  const handleScroll = () => {
-
-    if (
-      window.innerHeight + document.documentElement.scrollTop+10 >
-      document.documentElement.scrollHeight
-    ) {
-      setOffset((prev) => prev + 30);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
-    <div className="lg:mx-36 text-gray-800">
-      <div className="relative ">
-        <div className="flex justify-between ">
-          <div className="w-full lg:w-4/5 relative">
+    <div className="lg:mx-5 xl:mx-20 text-gray-800">
+      <div className="relative">
+        <div className="flex justify-between gap-5">
+          <div className="w-full lg:w-2/3 relative">
             <SearchBar
               pokemonName={pokemonName}
               setPokemonName={setPokemonName}
             />
             <DisplayList
-              offset={offset}
+              // offset={offset}
               pokemonName={pokemonName}
               setCurrentPokemon={setCurrentPokemon}
             />
           </div>
-          <div className="hidden lg:w-4/12 h-full sticky top-0 lg:flex items-center">
-            <div className="h-[calc(100vh)] w-full">
+          <div className="hidden lg:w-1/3  h-full sticky top-0 lg:flex items-center">
+            <div className="h-full overflow-scroll w-full">
               <Display
                 id={currentPokemon}
                 setCurrentPokemon={setCurrentPokemon}
