@@ -1,3 +1,4 @@
+
 import { useQuery, gql } from "@apollo/client";
 import { FC, useEffect, useRef, useState } from "react";
 import { useDebounce } from "../hooks/debounce";
@@ -83,8 +84,8 @@ const DisplayList: FC<DisplayLists> = ({
   const [offset, setOffset] = useState(0);
   const [pokemonData, setPokemonData] = useState<any>([]);
   const [searchData, setSearchData] = useState<any>([]);
-  const [lastMessage, setLastMessage] = useState<Boolean>(false);
-  const [mainLoader, setMainLoader] = useState<Boolean>(true);
+  const [lastMessage, setLastMessage] = useState<boolean>(false);
+  const [mainLoader, setMainLoader] = useState<boolean>(true);
   const isFetchingRef = useRef(false);
 
   const handleScroll = () => {

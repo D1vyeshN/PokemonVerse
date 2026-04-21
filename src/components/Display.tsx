@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { ColorSelector } from "./DisplayList";
 import Evolution from "./Evolution";
 import { IoClose } from "react-icons/io5";
