@@ -17,7 +17,7 @@ function App() {
       <div
         className="min-h-screen h-screen w-full fixed top-0 left-0 z-0"
         style={{
-          backgroundImage: `linear-gradient(to right, ${currentBg.color_1+80}, ${currentBg.color_2 == "#000" ? currentBg.color_1+80 : currentBg.color_2+80})`,
+          backgroundImage: `linear-gradient(to right, ${currentBg.color_1 || '#fff'}, ${currentBg.color_2 || currentBg.color_1 || '#fff'})`,
         }}
       ></div>
       <div className="lg:px-5 xl:px-20 text-gray-800  relative bg-transparent z-20">

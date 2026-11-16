@@ -1,4 +1,3 @@
-
 import { useQuery, gql } from "@apollo/client";
 import { FC, useEffect, useRef, useState } from "react";
 import { useDebounce } from "../hooks/debounce";
@@ -103,16 +102,16 @@ const DisplayList: FC<DisplayLists> = ({
   };
 
   const GET_POKEMONLIST = gql`
-    query samplePokeAPIquery($pokemonName: String, $offset: Int) {
-      pokemon_v2_pokemon(
+    query PokemonSearch($pokemonName: String, $offset: Int) {
+      pokemon(
         where: { name: { _iregex: $pokemonName } }
         limit: 18
         offset: $offset
       ) {
         id
         name
-        pokemon_v2_pokemontypes {
-          pokemon_v2_type {
+        pokemontypes {
+          type {
             name
           }
         }
@@ -129,7 +128,7 @@ const DisplayList: FC<DisplayLists> = ({
     },
   });
 
-  const newPokemonData = data?.pokemon_v2_pokemon || [];
+  const newPokemonData = data?.pokemon || [];
   const filteredPokemon =
     pokemonName.trim().length > 0
       ? searchData.filter((pokemon: any) =>
@@ -195,10 +194,10 @@ const DisplayList: FC<DisplayLists> = ({
           <div
             key={i}
             onClick={() => {
-              const { pokemon_v2_pokemontypes } = pokemon;
+              const { pokemontypes } = pokemon;
               setCurrentBg({
-                color_1: ColorSelector(pokemon_v2_pokemontypes[0]?.pokemon_v2_type?.name),
-                color_2: ColorSelector(pokemon_v2_pokemontypes[1]?.pokemon_v2_type?.name),
+                color_1: ColorSelector(pokemontypes[0]?.type?.name),
+                color_2: ColorSelector(pokemontypes[1]?.type?.name),
               });
               setCurrentPokemon(pokemon.id);
             }}
@@ -218,14 +217,14 @@ const DisplayList: FC<DisplayLists> = ({
               </h1>
 
               <div className="flex justify-center items-center gap-3 pb-4">
-                {pokemon.pokemon_v2_pokemontypes.map((el: any, i: number) => (
+                {pokemon.pokemontypes.map((el: any, i: number) => (
                   <p
                     key={i}
                     className={`px-3 py-1 text-sm rounded-lg bg-[${ColorSelector(
-                      el?.pokemon_v2_type?.name,
+                      el?.type?.name,
                     )}] text-center font-semibold capitalize opacity-85`}
                   >
-                    {el?.pokemon_v2_type?.name}
+                    {el?.type?.name}
                   </p>
                 ))}
               </div>

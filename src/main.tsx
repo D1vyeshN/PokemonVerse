@@ -5,7 +5,7 @@ import "./index.css";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: 'https://beta.pokeapi.co/graphql/v1beta',
+  uri: 'https://graphql.pokeapi.co/v1beta2',
   cache: new InMemoryCache(),
 });
 
